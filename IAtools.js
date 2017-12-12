@@ -6,7 +6,11 @@
  * Current capabilities are to add a tabbed control inside an HTML control that emits events and callbacks per tab,
  * as well as some functions to work with stand-alone picklists.
  * 
- * The file IAtools-test.xml is an example IDMAPPS (User Application/RBPM) workflow using this import. 
+ * Main files:
+ * * **IAtools.js**: Import file source code
+ * * **IAtools.min.js**: Minified version of the code
+ * * **IAtools.js**: Source map file for the minified version
+ * * **IAtools-test.xml**: example IDMAPPS (User Application/RBPM) workflow using this import.
  * 
  * @namespace
  */
