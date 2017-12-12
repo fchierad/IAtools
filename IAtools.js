@@ -1,5 +1,13 @@
-// IAtools module. Support utilities for User App/RBPM/IDMAPPS forms
-
+/** 
+ * # IAtools
+ * 
+ * Import file to use in MicroFocus IDMAPPS module's forms.
+ * 
+ * Current capabilities are to add a tabbed control inside an HTML control that emits events and callbacks per tab,
+ * as well as some functions to work with stand-alone picklists.
+ * 
+ * @namespace
+ */
 var IAtools = ( function iatools () {
 	// Store's library's own name
 	var libname = 'IAtools';
@@ -14,18 +22,30 @@ var IAtools = ( function iatools () {
 	};
 	var idmapps = {}; // Stores the IDMAPPS framework objects
 	
-	// module version and requirements
+	/**  
+	 * Module version and requirements
+   * 
+   * @memberof IAtools
+   * 
+	 * @return {string} Module's version
+	 */
 	function version()
 	{
 		var o = {
-			version:'0.0.2',
+			version:'0.0.3',
 			requires:'no other modules at the moment'
 		};
 		return o.version;
 	}
 
 	/**
-	 * Initializes references to the IDMAPPs objects and save the same in the internal storage
+	 * Initializes references to the IDMAPPs framework objects and save the same in the internal storage
+	 * 
+   * @memberof IAtools
+   * 
+	 * @param {object}  field    IDMAPPS framework field object
+	 * @param {object}  form     IDMAPPS framework form object
+	 * @param {object}  IDVault  IDMAPPS framework IDVault object
 	 */
 	function init( field, form, IDVault ) {
 		// Only appends the parameters passed so that we can check for the link's existence
@@ -41,10 +61,10 @@ var IAtools = ( function iatools () {
 		}
 	}
 
-		/**
+	/**
 	 * When added in the event section of a form field, allow us to show and hide that field by using 
 	 * field.fireEvent( event-name, action );
-	 * Wheve event-name is the event's name and action is either 'show' or 'hide'
+	 * Where event-name is the event's name and action is either 'show' or 'hide'
 	 * 
 	 * Since the field visibility functions only exist inside the field context we need to pass both objects from where
 	 * the function is being called to use them inside that scope/context. Inside the event we just need to add the line:
@@ -52,6 +72,8 @@ var IAtools = ( function iatools () {
 	 * to properly use this function. No need to change anything on the line above, it is already passing the event and field objects
 	 * as seen in the scope of that particular form field.
 	 * 
+   * @memberof IAtools
+   * 
 	 * @param {object}  event	event object as seen by the field's scope
 	 * @param {object}  field	field  object as seen by the field's scope
 	 *
@@ -74,11 +96,12 @@ var IAtools = ( function iatools () {
 	 * Reads a picklist field in RBPM and retrieves all its values/options. This is necessary since 
 	 * the RBPM standard API only lets us retrieve selected values, not the whole list of available ones.
 	 *
-	* @param {string}	fldName		Name of the picklist control field as displayed in Designer.
-
-	* @return {Object}	Returns an object with the format { 'data':[ picklist data ], 'display':[ picklist display values ] }
-	*/
-
+   * @memberof IAtools
+   * 
+   * @param {string}	fldName		Name of the picklist control field as displayed in Designer.
+   * 
+	 * @return {Object}	Returns an object with the format { 'data':[ picklist data ], 'display':[ picklist display values ] }
+	 */
 	function readAllPicklistOptions( fldName ) {
 	var ret = { data:[], display:[] };
 	var selfld, selopt, rbpmID;
@@ -112,14 +135,16 @@ var IAtools = ( function iatools () {
 			}
 		}
 	}
-
 	return ret;
 	}
 
 	/**
-	 * Wrapped all HTML Tabbed control functions into a sub-module so that we can instantiate multiple controls in the same RBPM form
-	 * Usage: 
-	 * 		var tabname = IAtools.tabCtrlFactory();
+	 * IDMAPPS tab control sub-module. 
+	 * 
+	 * @namespace
+	 * @memberof IAtools
+	 * 
+	 * @example var tabname = IAtools.tabCtrlFactory();
 	 */
 	function tabCtrlFactory() {
 		var tabPublicAPI = {
@@ -149,7 +174,7 @@ var IAtools = ( function iatools () {
 		 * @param {string}    name       Tab display name
 		 * @param {number}    order      Tab sorting order. Lower is left-most, higher is right-most.
 		 * @param {Array}     fieldlist  List of field(s) whose visibility and data are related to the added tab
-		 * @param {function}  cb         Callback used when the tabs change. Will called as tabs change with a 2 parameters: tab internal ID and string parameter. 
+		 * @param {function}  cb         Callback used when the tabs change. Will be called as tabs change with a 2 parameters: tab internal ID and string parameter. 
 		 *                               When a tab becomes active the second parameter is 'enter', when it becomes inactive the second parameter is 'leave'.
 		 * 
 		 * @return {boolean}  true if successful, false if invalid parameters are received or tab already exists
@@ -258,7 +283,7 @@ var IAtools = ( function iatools () {
 		 * 
 		 * @return {text/html} Style HTML tag with working HTML tabs
 		 */
-		function getTabHTML( uniqueID, postSelectedFn ) {
+		function getTabHTML( uniqueID ) {
 			if ( uniqueID == null ) {
 				return false;
 			}
@@ -298,6 +323,8 @@ var IAtools = ( function iatools () {
 		/**
 		 * Switches the tab that has the CSS class for navactive.
 		 * 
+		 * @private
+		 * 
 		 * @param {string}  evt       The event object from the browser action 
 		 * @param {string}  uniqueID  Unique ID set at the UL element of the tabbed interface
 		 * @param {string}  tabID     Individual tab's ID value, usually uniqueID + '_' + tab.id . both are first stripped of all _ characters.
@@ -329,6 +356,8 @@ var IAtools = ( function iatools () {
 
 		/**
 		 * Emit events to perform the action (show or hide) on all form fields mapped to the tabID
+		 * 
+		 * @private
 		 * 
 		 * @param {string}  tabID   Tab id to be parsed and used to determine which fields to act upon
 		 * @param {string}  action  'show' or 'hide', no other action is accepted
@@ -369,6 +398,8 @@ var IAtools = ( function iatools () {
 		 * To make life simpler, links the internal activateTab to a custom name based off of 
 		 * the HTML element's unique ID
 		 * 
+		 * @private
+		 * 
 		 * @param {string} uniqueID  Used as part of the export name, making easier to tie 
 		 *                           the dynamic function back to the HTML element it corresponds to
 		 * 
@@ -392,30 +423,38 @@ var IAtools = ( function iatools () {
 	}
 
 	/** 
- * Returns a function with specific behaviors based on the parameters passed in. 
- *  @param {string}     action  Valid options are "add", "move" or "remove". Choose the basic functionality of the returned function.
- *  @param {boolean}    sort    (Optional) true will sort the values for both source and destination fields. Defaults to false if not provided.
- *  @param {string}     sortfn  (Optional) if sort equals true, custom sort function to be used to sort the fields.
- *                              Both source and destination fields are sorted with the same function
- */
+	 * Builds functions to manage items on picklist control.
+	 * Allows developer to define functions that copy or move items between picklists,
+	 * as well as ones that remove items from picklists. Allows to specify sorting and pass in
+	 * a custom sorting function to be used by the picklist management function generated.
+	 * 
+	 * @namespace
+	 * @memberof IAtools
+	 * 
+	 * @example var addToPicklist = IAtools.picklistFnFactory( "add" );
+	 * @example var moveToPicklistWithSort = IAtools.picklistFnFactory( "move", true );
+	 * @example var removeCustomSort = IAtools.picklistFnFactory( "remove", true, function(a, b) { return a - b; } );
+	 * 
+	 * @param {string}     action  Valid options are "add", "move" or "remove". Choose the basic functionality of the returned function.
+	 *                              add -> Add the selections passed to the destination field;
+	 *                              move -> Remove the selections passed from the Source field and add them to the destination field;
+	 *                              remove -> Removes the selections passed from the Source Field. Destination field is not used with this action. 
+	 *                              If a item already exists in the destination field, code will highlight that entry instead of adding a second copy.
+	 * @param {boolean}    sort    (Optional) true will sort the values for both source and destination fields. Defaults to false if not provided.
+	 * @param {string}     sortfn  (Optional) if sort equals true, custom sort function to be used to sort the fields.
+	 *                             Both source and destination fields are sorted with the same function
+	 */
 	function picklistFnFactory( action, sort, sortfn ) {
 		/**
-		 * The returned function will behave differently based on the action value.
-		 * 
-		 * Action:
-		 * add -> Add the selections passed to the destination field
-		 * move -> Remove the selections passed from the Source field and add them to the destination field
-		 * remove -> Removes the selections passed from the Source Field. Destination field is not used with this action
-		 * 
-		 * If a item already exists in the destination field, code will highlight that entry instead of adding a second copy.
+		 * Returned Function that performs picklist management as per parameters passed to picklistFnFactory.
 		 * 
 		 * @param {string/array}  selections     String or Array with values to be moved from source to destination field
 		 * @param {string}        srcFieldName   Name of the source field being read/modified
 		 * @param {string}        destFieldName  Name of the destination field being read/modified
 		 *
-		 * @return {boolean}  false if validation of paratemers or task failed, true otherwise.
+		 * @return {boolean}  false if validation of parameters or task failed, true otherwise.
 		 */ 
-		return function PlFactory( selections, srcFieldName, destFieldName ) {
+		function PlFactory( selections, srcFieldName, destFieldName ) {
 			// Variables section
 			var fieldstate = {}; // Stores field states internally
 			var srcFld = { 'data':[], 'display':[] }; // Values read from destination field
@@ -548,7 +587,8 @@ var IAtools = ( function iatools () {
 					}
 				}
 			return true;
-		};
+		}
+		return PlFactory;
 	}
 	
 	return PublicAPI;
